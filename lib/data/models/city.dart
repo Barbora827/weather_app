@@ -4,16 +4,16 @@ import 'package:flutter/services.dart' show rootBundle;
 
 class City {
   final String name;
-  final double latitude;
-  final double longitude;
+  final String latitude;
+  final String longitude;
 
   City({required this.name, required this.latitude, required this.longitude});
 
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
         name: json['name'] ?? '',
-        latitude: json['latitude'] ?? 40.712776,
-        longitude: json['longitude'] ?? -74.005974);
+        latitude: json['latitude'] ?? "40.712776",
+        longitude: json['longitude'] ?? "-74.005974");
   }
 }
 

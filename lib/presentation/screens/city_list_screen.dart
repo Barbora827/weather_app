@@ -1,12 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 
 import '../../data/models/city.dart';
 
-class CityListScreen extends StatelessWidget {
+class CityListScreen extends StatefulWidget {
   const CityListScreen({super.key});
+
+  @override
+  State<CityListScreen> createState() => _CityListScreenState();
+}
+
+class _CityListScreenState extends State<CityListScreen> {
+  List<City> cities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveSavedCities();
+  }
+
+  Future<void> _retrieveSavedCities() async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys();
+    final List<City> tempCities = [];
+    for (final key in keys) {
+      final data = prefs.getString(key);
+      if (data != null) {
+        final decodedData = jsonDecode(data);
+        tempCities.add(City(
+          name: key,
+          latitude: decodedData['lat'].toString(),
+          longitude: decodedData['lng'].toString(),
+        ));
+      }
+    }
+    setState(() {
+      cities = tempCities;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,44 +58,39 @@ class CityListScreen extends StatelessWidget {
             const Gap(40),
             const WText(
               text: "My Cities",
-              size: 60,
+              size: 55,
               weight: FontWeight.w600,
             ),
-            FutureBuilder<List<City>>(
-                future: fetchCities(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    final cities = snapshot.data!;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: cities.length,
-                        itemBuilder: (context, index) {
-                          final city = cities[index];
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            color: Colors.transparent,
-                            child: ListTile(
-                              title: WText(text: city.name),
-                              trailing: const Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: WColors.white,
-                              ),
-                            ),
-                          );
-                        },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: cities.length,
+                itemBuilder: (context, index) {
+                  final city = cities[index];
+                  return Card(
+                    color: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      title: WText(
+                        text: city.name,
+                        color: WColors.white,
                       ),
-                    );
-                  }
-                })
+                      trailing: GestureDetector(
+                        onTap: () {},
+                        child: const Icon(
+                          Icons.keyboard_arrow_right_outlined,
+                          size: 40,
+                          color: WColors.white,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ]),
     );
   }
