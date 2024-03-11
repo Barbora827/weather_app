@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Paris",
+    "latitude": 48.856613,
+    "longitude": 2.352222
+  },
+  {
+    "name": "Prague",
+    "latitude": 50.075539,
+    "longitude": 14.437800
+  },
+  {
+    "name": "London",
+    "latitude": 51.507351,
+    "longitude": -0.127758
+  }
+
+]

@@ -1,44 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/bloc/weather_bloc.dart';
-import 'package:weather_app/screens/weather_screen.dart';
+import 'package:weather_app/presentation/screens/add_city_screen.dart';
+import 'package:weather_app/presentation/screens/city_list_screen.dart';
+import 'package:weather_app/presentation/screens/weather_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/styles/colors.dart';
-import 'package:weather_app/widgets/w_text.dart';
+import 'package:weather_app/presentation/styles/colors.dart';
+import 'package:weather_app/presentation/widgets/w_navbar.dart';
+import 'package:weather_app/presentation/widgets/w_text.dart';
+
+import 'bloc/add_city/add_city_bloc.dart';
+import 'bloc/city_list/city_list_bloc.dart';
+import 'bloc/weather/weather_bloc.dart';
 
 void main() {
   runApp(const WeatherApp());
 }
 
-class WeatherApp extends StatelessWidget {
+class WeatherApp extends StatefulWidget {
   const WeatherApp({super.key});
+
+  @override
+  State<WeatherApp> createState() => _WeatherAppState();
+}
+
+class _WeatherAppState extends State<WeatherApp> {
+  int _selectedIndex = 0;
+
+  late List<Widget> _screens;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(canvasColor: Colors.transparent),
       debugShowCheckedModeBanner: false,
-      // Need to request permission for position outside of bloc
-      home: FutureBuilder(
-        future: _determinePosition(),
-        builder: (context, snap) {
-          if (snap.hasData) {
-            return BlocProvider<WeatherBloc>(
-              create: (context) =>
-                  WeatherBloc()..add(GetWeather(snap.data as Position)),
-              child: const WeatherScreen(),
-            );
-          } else {
-            return const Scaffold(
-                body: Center(
-              child: WText(
-                text: "Loading...",
-                size: 50,
-                color: WColors.black,
-              ),
-            ));
-          }
-        },
-      ),
+      home: Scaffold(
+          extendBody: true,
+          // Need to request permission for position outside of bloc
+          body: FutureBuilder(
+            future: _determinePosition(),
+            builder: (context, snap) {
+              if (snap.hasData) {
+                _screens = [
+                  BlocProvider<WeatherBloc>(
+                    create: (context) =>
+                        WeatherBloc()..add(GetWeather(snap.data as Position)),
+                    child: const WeatherScreen(),
+                  ),
+                  BlocProvider<AddCityBloc>(
+                    create: (context) => AddCityBloc(),
+                    child: const AddCityScreen(),
+                  ),
+                  BlocProvider<CityListBloc>(
+                    create: (context) => CityListBloc(),
+                    child: const CityListScreen(),
+                  ),
+                ];
+                return _screens[_selectedIndex];
+              } else {
+                return const Scaffold(
+                    body: Center(
+                  child: WText(
+                    text: "Loading...",
+                    size: 50,
+                    color: WColors.black,
+                  ),
+                ));
+              }
+            },
+          ),
+          bottomNavigationBar:
+              WNavbar(selectedIndex: _selectedIndex, onTap: _onItemTapped)),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:weather_app/widgets/w_text.dart';
+import 'package:weather_app/presentation/widgets/w_text.dart';
 
 import '../styles/colors.dart';
 

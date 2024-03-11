@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/widgets/w_app_icons.dart';
+import 'package:weather_app/presentation/widgets/w_app_icons.dart';
 
 enum WeatherCode {
   thunderstorm,
