@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:weather/weather.dart';
+import 'package:weather_app/data/data.dart';
 import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/screens/weather_screen.dart';
@@ -15,6 +17,9 @@ import 'bloc/weather/weather_bloc.dart';
 void main() {
   runApp(const WeatherApp());
 }
+
+// final int currentHour = 21;
+final int currentHour = int.parse(DateTime.now().toString().substring(10, 13));
 
 class WeatherApp extends StatefulWidget {
   const WeatherApp({super.key});
@@ -48,8 +53,8 @@ class _WeatherAppState extends State<WeatherApp> {
               if (snap.hasData) {
                 _screens = [
                   BlocProvider<WeatherBloc>(
-                    create: (context) =>
-                        WeatherBloc()..add(GetWeather(snap.data as Position)),
+                    create: (context) => WeatherBloc(WeatherFactory(apiKey))
+                      ..add(GetCurrentLocationWeather(snap.data as Position)),
                     child: const WeatherScreen(),
                   ),
                   BlocProvider<AddCityBloc>(

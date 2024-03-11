@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_app/data/data.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
+import 'package:weather_app/presentation/widgets/w_button.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 
 class GeocodingService {
@@ -104,13 +105,15 @@ class _AddCityScreenState extends State<AddCityScreen> {
             ),
           ),
           const Gap(30),
-          ElevatedButton(
-            onPressed: () {
-              _getAndSaveCity();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: WColors.lightBlue),
-            child: const WText(text: 'Add a city'),
-          ),
+          WButton(
+              onTap: () {
+                _getAndSaveCity();
+              },
+              text: "Add a city",
+              textColor: WColors.white,
+              btnColor: const Color.fromARGB(255, 65, 91, 127),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 25, vertical: 15)),
           const Gap(50),
         ],
       ),

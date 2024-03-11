@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:weather_app/main.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_code_icons.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
@@ -18,11 +19,11 @@ class WeatherScreen extends StatelessWidget {
       alignment: Alignment.center,
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: WColors.nightGradient),
+            colors: WColors.getTimeBasedGradient(currentHour)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -75,7 +76,13 @@ class WeatherScreen extends StatelessWidget {
                     iconColorRight: WColors.lightBlue,
                     titleRight: "Min Temps",
                     valueRight: "${state.weather.tempMin!.celsius!.round()}°C",
-                    gap: 30,
+                  ),
+                  const Divider(
+                    thickness: 1.5,
+                    color: WColors.white,
+                    height: 35,
+                    indent: 20,
+                    endIndent: 20,
                   ),
                   WDisplayRowWidget(
                     iconLeft: WeatherAppIcons.sun,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/main.dart';
+import 'package:weather_app/presentation/styles/colors.dart';
 
 class WNavbar extends StatelessWidget {
   const WNavbar({
@@ -29,25 +31,31 @@ class WNavbar extends StatelessWidget {
           topRight: Radius.circular(24),
           topLeft: Radius.circular(24),
         ),
-        child: BottomNavigationBar(
-          backgroundColor: Color.fromARGB(255, 233, 214, 255),
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.cloud),
-              label: 'Weather',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: 'Add city',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'My Cities',
-            ),
-          ],
-          currentIndex: selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 99, 40, 171),
-          onTap: onTap,
+        child: SizedBox(
+          height: 75,
+          child: BottomNavigationBar(
+            iconSize: 30,
+            unselectedFontSize: 14,
+            selectedFontSize: 16,
+            backgroundColor: WColors.white,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.cloud),
+                label: 'Weather',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add),
+                label: 'Add city',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.business),
+                label: 'My Cities',
+              ),
+            ],
+            currentIndex: selectedIndex,
+            selectedItemColor: WColors.getTimeBasedColor(currentHour),
+            onTap: onTap,
+          ),
         ),
       ),
     );

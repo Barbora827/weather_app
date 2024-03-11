@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather_app/presentation/screens/city_view_screen.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 
@@ -79,7 +80,15 @@ class _CityListScreenState extends State<CityListScreen> {
                         color: WColors.white,
                       ),
                       trailing: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CityViewScreen(
+                                  cityName: city.name,
+                                ),
+                              ));
+                        },
                         child: const Icon(
                           Icons.keyboard_arrow_right_outlined,
                           size: 40,
