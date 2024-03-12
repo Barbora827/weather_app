@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_app/data/data.dart';
+import 'package:weather_app/main.dart';
+import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_button.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
@@ -108,6 +111,12 @@ class _AddCityScreenState extends State<AddCityScreen> {
           WButton(
               onTap: () {
                 _getAndSaveCity();
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: const CityListScreen(),
+                  withNavBar: true,
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
               },
               text: "Add a city",
               textColor: WColors.white,

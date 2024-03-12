@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_app/data/data.dart';
 import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/screens/weather_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/presentation/styles/colors.dart';
-import 'package:weather_app/presentation/widgets/w_navbar.dart';
-import 'package:weather_app/presentation/widgets/w_text.dart';
-
 import 'bloc/add_city/add_city_bloc.dart';
 import 'bloc/city_list/city_list_bloc.dart';
 import 'bloc/weather/weather_bloc.dart';
@@ -20,6 +17,7 @@ void main() {
 
 // final int currentHour = 21;
 final int currentHour = int.parse(DateTime.now().toString().substring(10, 13));
+const int selectedIndex = 0;
 
 class WeatherApp extends StatefulWidget {
   const WeatherApp({super.key});
@@ -29,59 +27,89 @@ class WeatherApp extends StatefulWidget {
 }
 
 class _WeatherAppState extends State<WeatherApp> {
-  int _selectedIndex = 0;
+  PersistentTabController? _controller;
 
-  late List<Widget> _screens;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: selectedIndex);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(canvasColor: Colors.transparent),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          extendBody: true,
-          // Need to request permission for position outside of bloc
-          body: FutureBuilder(
+        theme: ThemeData(canvasColor: Colors.transparent),
+        debugShowCheckedModeBanner: false,
+        home: FutureBuilder(
             future: _determinePosition(),
-            builder: (context, snap) {
-              if (snap.hasData) {
-                _screens = [
-                  BlocProvider<WeatherBloc>(
-                    create: (context) => WeatherBloc(WeatherFactory(apiKey))
-                      ..add(GetCurrentLocationWeather(snap.data as Position)),
-                    child: const WeatherScreen(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return PersistentTabView(
+                  context,
+                  controller: _controller,
+                  screens: [
+                    BlocProvider<WeatherBloc>(
+                      create: (context) => WeatherBloc(WeatherFactory(apiKey))
+                        ..add(GetCurrentLocationWeather(
+                            snapshot.data as Position)),
+                      child: const WeatherScreen(),
+                    ),
+                    BlocProvider<AddCityBloc>(
+                      create: (context) => AddCityBloc(),
+                      child: const AddCityScreen(),
+                    ),
+                    BlocProvider<CityListBloc>(
+                      create: (context) => CityListBloc(),
+                      child: const CityListScreen(),
+                    ),
+                  ],
+                  items: [
+                    PersistentBottomNavBarItem(
+                      icon: Icon(Icons.home),
+                      title: "Home",
+                      activeColorPrimary: Colors.blue,
+                      inactiveColorPrimary: Colors.grey,
+                    ),
+                    PersistentBottomNavBarItem(
+                      icon: Icon(Icons.add),
+                      title: "Add City",
+                      activeColorPrimary: Colors.blue,
+                      inactiveColorPrimary: Colors.grey,
+                    ),
+                    PersistentBottomNavBarItem(
+                      icon: Icon(Icons.list),
+                      title: "City List",
+                      activeColorPrimary: Colors.blue,
+                      inactiveColorPrimary: Colors.grey,
+                    ),
+                  ],
+                  confineInSafeArea: true,
+                  backgroundColor: Colors.white,
+                  handleAndroidBackButtonPress: true,
+                  resizeToAvoidBottomInset: true,
+                  stateManagement: true,
+                  hideNavigationBarWhenKeyboardShows: true,
+                  decoration: NavBarDecoration(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  BlocProvider<AddCityBloc>(
-                    create: (context) => AddCityBloc(),
-                    child: const AddCityScreen(),
+                  popAllScreensOnTapOfSelectedTab: true,
+                  popActionScreens: PopActionScreensType.all,
+                  itemAnimationProperties: ItemAnimationProperties(
+                    duration: Duration(milliseconds: 400),
+                    curve: Curves.ease,
                   ),
-                  BlocProvider<CityListBloc>(
-                    create: (context) => CityListBloc(),
-                    child: const CityListScreen(),
+                  screenTransitionAnimation: ScreenTransitionAnimation(
+                    animateTabTransition: true,
+                    curve: Curves.ease,
+                    duration: Duration(milliseconds: 200),
                   ),
-                ];
-                return _screens[_selectedIndex];
+                  navBarStyle:
+                      NavBarStyle.style9, // Choose the nav bar style you desire
+                );
               } else {
-                return const Scaffold(
-                    body: Center(
-                  child: WText(
-                    text: "Loading...",
-                    size: 50,
-                    color: WColors.black,
-                  ),
-                ));
+                return Container();
               }
-            },
-          ),
-          bottomNavigationBar:
-              WNavbar(selectedIndex: _selectedIndex, onTap: _onItemTapped)),
-    );
+            }));
   }
 }
 

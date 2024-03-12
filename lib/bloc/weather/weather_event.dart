@@ -24,3 +24,5 @@ class GetCityWeather extends WeatherEvent {
   @override
   List<Object> get props => [cityName];
 }
+
+class RefreshWeather extends WeatherEvent {}

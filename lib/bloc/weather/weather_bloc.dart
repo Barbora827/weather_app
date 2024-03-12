@@ -24,6 +24,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         emit(WeatherFail());
       }
     });
+
     on<GetCityWeather>((event, emit) async {
       emit(WeatherLoading());
       try {
@@ -32,6 +33,27 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         Weather weather =
             await wFactory.currentWeatherByCityName(event.cityName);
         emit(WeatherSuccess(weather));
+      } catch (e) {
+        emit(WeatherFail());
+      }
+    });
+
+    on<RefreshWeather>((event, emit) async {
+      emit(WeatherRefreshing());
+      try {
+        WeatherFactory wFactory =
+            WeatherFactory(apiKey, language: Language.ENGLISH);
+
+        final currentState = state;
+        if (currentState is WeatherSuccess) {
+          final refreshedWeather = await wFactory.currentWeatherByCityName(
+            currentState.weather.areaName!,
+          );
+
+          emit(WeatherSuccess(refreshedWeather));
+        } else {
+          return;
+        }
       } catch (e) {
         emit(WeatherFail());
       }
