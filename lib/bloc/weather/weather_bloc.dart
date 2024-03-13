@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather_app/data/data.dart';
+
+import '../../data/models/city.dart';
 
 part 'weather_event.dart';
 part 'weather_state.dart';
@@ -19,6 +24,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
           event.position.latitude,
           event.position.longitude,
         );
+        _cacheCurrentLocationWeatherData(weather);
         emit(WeatherSuccess(weather));
       } catch (e) {
         emit(WeatherFail());
@@ -32,6 +38,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
             WeatherFactory(apiKey, language: Language.ENGLISH);
         Weather weather =
             await wFactory.currentWeatherByCityName(event.cityName);
+        _cacheCityWeatherData(event.cityName, weather);
         emit(WeatherSuccess(weather));
       } catch (e) {
         emit(WeatherFail());
@@ -39,7 +46,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     });
 
     on<RefreshWeather>((event, emit) async {
-      emit(WeatherRefreshing());
+      emit(WeatherLoading());
       try {
         WeatherFactory wFactory =
             WeatherFactory(apiKey, language: Language.ENGLISH);
@@ -49,7 +56,6 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
           final refreshedWeather = await wFactory.currentWeatherByCityName(
             currentState.weather.areaName!,
           );
-
           emit(WeatherSuccess(refreshedWeather));
         } else {
           return;
@@ -58,5 +64,15 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         emit(WeatherFail());
       }
     });
+  }
+
+  void _cacheCurrentLocationWeatherData(Weather weather) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('cached_weather', jsonEncode(weather));
+  }
+
+  void _cacheCityWeatherData(String cityName, Weather weather) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('cached_weather_$cityName', jsonEncode(weather));
   }
 }

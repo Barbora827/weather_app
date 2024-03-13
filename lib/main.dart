@@ -5,7 +5,7 @@ import 'package:weather/weather.dart';
 import 'package:weather_app/data/data.dart';
 import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
-import 'package:weather_app/presentation/screens/weather_screen.dart';
+import 'package:weather_app/presentation/screens/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/add_city/add_city_bloc.dart';
 import 'bloc/city_list/city_list_bloc.dart';
@@ -52,14 +52,15 @@ class _WeatherAppState extends State<WeatherApp> {
                       create: (context) => WeatherBloc(WeatherFactory(apiKey))
                         ..add(GetCurrentLocationWeather(
                             snapshot.data as Position)),
-                      child: const WeatherScreen(),
+                      child: const HomeScreen(),
                     ),
                     BlocProvider<AddCityBloc>(
                       create: (context) => AddCityBloc(),
                       child: const AddCityScreen(),
                     ),
                     BlocProvider<CityListBloc>(
-                      create: (context) => CityListBloc(),
+                      create: (context) =>
+                          CityListBloc()..add(RefreshCityList()),
                       child: const CityListScreen(),
                     ),
                   ],
@@ -81,7 +82,7 @@ class _WeatherAppState extends State<WeatherApp> {
                       title: "City List",
                       activeColorPrimary: Colors.blue,
                       inactiveColorPrimary: Colors.grey,
-                    ),
+                    )
                   ],
                   confineInSafeArea: true,
                   backgroundColor: Colors.white,

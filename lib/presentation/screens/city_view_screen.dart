@@ -1,20 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_app/data/data.dart';
 import 'package:weather_app/main.dart';
-import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_code_icons.dart';
-import 'package:weather_app/presentation/widgets/w_icon_button.dart';
-import 'package:weather_app/presentation/widgets/w_text.dart';
-import 'package:weather_app/presentation/widgets/w_app_icons.dart';
 import '../../bloc/weather/weather_bloc.dart';
-import '../widgets/w_display_row.dart';
-import 'package:intl/intl.dart';
+import '../widgets/weather_display.dart';
 
 class CityViewScreen extends StatelessWidget {
   final String cityName;
@@ -43,96 +38,55 @@ class CityViewScreen extends StatelessWidget {
           builder: (context, state) {
             if (state is WeatherSuccess) {
               final weatherCode = state.weather.weatherConditionCode!;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Gap(30),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Gap(15),
-                        WIconButton(
-                            icon: Icons.keyboard_arrow_left_rounded,
-                            onTap: () {}),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 40),
-                            child: WText(
-                              text: cityName,
-                              textAlign: TextAlign.center,
-                              size: 35,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(30),
-                  Icon(
-                    getWeatherIcon(weatherCode),
-                    size: 225,
-                    color: WColors.white,
-                  ),
-                  const Gap(15),
-                  WText(
-                    text: "${state.weather.temperature!.celsius!.round()}°C",
-                    size: 70,
-                    weight: FontWeight.w600,
-                  ),
-                  WText(
-                    text: "${state.weather.weatherMain}",
-                    size: 25,
-                    weight: FontWeight.w600,
-                  ),
-                  const Gap(10),
-                  WText(
-                    text:
-                        DateFormat("E MMMM d | ").format(state.weather.date!) +
-                            DateFormat("jm").format(state.weather.date!),
-                    size: 18,
-                    weight: FontWeight.w500,
-                  ),
-                  const Gap(50),
-                  WDisplayRowWidget(
-                    iconLeft: WeatherAppIcons.temperatire,
-                    iconColorLeft: WColors.red,
-                    titleLeft: "Max Temps",
-                    valueLeft: "${state.weather.tempMax!.celsius!.round()}°C",
-                    iconRight: WeatherAppIcons.temperatire,
-                    iconColorRight: WColors.lightBlue,
-                    titleRight: "Min Temps",
-                    valueRight: "${state.weather.tempMin!.celsius!.round()}°C",
-                  ),
-                  const Divider(
-                    thickness: 1.5,
-                    color: WColors.white,
-                    height: 35,
-                    indent: 20,
-                    endIndent: 20,
-                  ),
-                  WDisplayRowWidget(
-                    iconLeft: WeatherAppIcons.sun,
-                    iconColorLeft: WColors.yellow,
-                    titleLeft: "Sunrise",
-                    valueLeft: DateFormat("jm").format(state.weather.sunrise!),
-                    iconRight: WeatherAppIcons.moon,
-                    iconColorRight: WColors.purple,
-                    titleRight: "Sunset",
-                    valueRight: DateFormat("jm").format(state.weather.sunset!),
-                  ),
-                ],
-              );
+              return WeatherDisplay(
+                  canNavigateBack: true,
+                  areaName: "${state.weather.areaName}",
+                  temperature:
+                      "${state.weather.temperature!.celsius!.round()}°C",
+                  icon: getWeatherIcon(weatherCode),
+                  weather: "${state.weather.weatherMain}",
+                  date: state.weather.date!,
+                  tempMax: "${state.weather.tempMax!.celsius!.round()}°C",
+                  tempMin: "${state.weather.tempMin!.celsius!.round()}°C",
+                  sunset: state.weather.sunset!,
+                  sunrise: state.weather.sunrise!);
             } else {
-              return Container();
+              // If offline
+              return FutureBuilder<String?>(
+                future: _getCachedCityWeather(cityName),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final Map<String, dynamic> savedWeatherMap =
+                        jsonDecode(snapshot.data!);
+                    final Weather cachedWeather = Weather(savedWeatherMap);
+                    final weatherCode = cachedWeather.weatherConditionCode!;
+                    return WeatherDisplay(
+                        canNavigateBack: true,
+                        areaName: "${cachedWeather.areaName}",
+                        temperature:
+                            "${cachedWeather.temperature!.celsius!.round()}°C",
+                        icon: getWeatherIcon(weatherCode),
+                        weather: "${cachedWeather.weatherMain}",
+                        date: cachedWeather.date!,
+                        tempMax: "${cachedWeather.tempMax!.celsius!.round()}°C",
+                        tempMin: "${cachedWeather.tempMin!.celsius!.round()}°C",
+                        sunset: cachedWeather.sunset!,
+                        sunrise: cachedWeather.sunrise!);
+                  } else {
+                    return const Center(
+                        child: Text('No cached weather data available.'));
+                  }
+                },
+              );
             }
           },
         ),
       ),
     );
+  }
+
+  Future<String?> _getCachedCityWeather(String cityName) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('cached_weather_$cityName');
   }
 }
