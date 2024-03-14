@@ -9,6 +9,7 @@ abstract class WColors {
   static const Color yellow = Color.fromARGB(255, 255, 240, 124);
   static const Color purple = Color.fromARGB(255, 103, 37, 169);
   static const Color blue = Color.fromARGB(255, 61, 149, 232);
+  static const Color green = Color.fromARGB(255, 117, 206, 62);
 
   static const List<Color> dayGradient = [
     Color.fromARGB(255, 100, 155, 244),

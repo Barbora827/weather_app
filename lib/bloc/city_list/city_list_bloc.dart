@@ -12,6 +12,7 @@ part 'city_list_state.dart';
 class CityListBloc extends Bloc<CityListEvent, CityListState> {
   CityListBloc() : super(CityListLoading()) {
     on<GetCities>((event, emit) async {
+      emit(CityListLoading());
       try {
         List<City> cities = await _retrieveSavedCities();
         emit(CityListSuccess(cities));
@@ -22,17 +23,27 @@ class CityListBloc extends Bloc<CityListEvent, CityListState> {
 
     on<RefreshCityList>((event, emit) async {
       emit(CityListLoading());
-      print("city loading");
+
       try {
         List<City> updatedCities = await _retrieveSavedCities();
         emit(CityListSuccess(updatedCities));
-        print("city success");
       } catch (e) {
         emit(CityListError());
-        print("city error");
+      }
+    });
+
+    on<RemoveCity>((event, emit) async {
+      try {
+        await _removeCity(event.city);
+        List<City> updatedCities = await _retrieveSavedCities();
+        emit(CityListSuccess(updatedCities));
+      } catch (e) {
+        emit(CityListError());
       }
     });
   }
+
+  // Functions
 
   Future<List<City>> _retrieveSavedCities() async {
     final prefs = await SharedPreferences.getInstance();
@@ -57,5 +68,10 @@ class CityListBloc extends Bloc<CityListEvent, CityListState> {
     }
 
     return savedCities;
+  }
+
+  Future<void> _removeCity(City city) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(city.name);
   }
 }

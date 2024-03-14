@@ -8,6 +8,7 @@ import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_code_icons.dart';
 import 'package:weather_app/presentation/widgets/weather_display.dart';
 import '../../bloc/weather/weather_bloc.dart';
+import '../widgets/w_no_internet_display.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,8 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       sunset: cachedWeather.sunset!,
                       sunrise: cachedWeather.sunrise!);
                 } else {
-                  return const Center(
-                      child: Text('No cached weather data available.'));
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: WNoInternetDisplay(
+                      cache: true,
+                      onTap: () {},
+                    ),
+                  );
                 }
               },
             );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_app/presentation/widgets/w_app_icons.dart';
-import 'package:weather_app/presentation/widgets/w_code_icons.dart';
 import 'package:weather_app/presentation/widgets/w_display_row.dart';
 import 'package:weather_app/presentation/widgets/w_icon_button.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';

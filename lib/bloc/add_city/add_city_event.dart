@@ -6,3 +6,5 @@ sealed class AddCityEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class RefreshAddCityScreen extends AddCityEvent {}
