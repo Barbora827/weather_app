@@ -6,6 +6,7 @@ import 'package:weather_app/presentation/screens/city_view_screen.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 import '../../data/models/city.dart';
+import '../widgets/w_button.dart';
 
 class CityListScreen extends StatefulWidget {
   const CityListScreen({super.key});
@@ -44,99 +45,190 @@ class _CityListScreenState extends State<CityListScreen> {
                 alignment: Alignment.center,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                color: const Color.fromARGB(255, 67, 63, 93),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Gap(40),
-                      const WText(
-                        text: "My Cities",
-                        size: 55,
-                        weight: FontWeight.w600,
-                      ),
-                      const WText(
-                        text:
-                            "Here is the list of your added cities. Click on the card to see the detailed view.",
-                        textAlign: TextAlign.center,
-                        size: 18,
-                        maxLines: 3,
-                      ),
-                      const Gap(10),
-                      const WText(
-                        text:
-                            "Double tap the bin icon to delete a city from the list",
-                        textAlign: TextAlign.center,
-                        size: 18,
-                        color: WColors.red,
-                      ),
-                      const Gap(15),
-                      Expanded(
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: cities.length,
-                          itemBuilder: (context, index) {
-                            if (index == cities.length) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            final city = cities[index];
+                color: WColors.darkPurple,
+                child: cities.isNotEmpty
+                    ? _buildCityListWidget()
+                    : _buildEmptyListWidget(),
+              ),
+            );
+          } else if (state is CityListLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return const Center(
+              child: WText(
+                text: "Error fetching data",
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
 
-                            return Card(
-                              color: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: ListTile(
-                                title: WText(
-                                  text: city.name,
-                                  color: WColors.white,
-                                ),
-                                leading: GestureDetector(
-                                  onDoubleTap: () {
-                                    context
-                                        .read<CityListBloc>()
-                                        .add(RemoveCity(city));
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    size: 30,
-                                    color: WColors.red,
-                                  ),
-                                ),
-                                trailing: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CityViewScreen(
-                                          cityName: city.name,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: const Icon(
-                                    Icons.keyboard_arrow_right_outlined,
-                                    size: 40,
-                                    color: WColors.white,
-                                  ),
+  Widget _buildCityListWidget() {
+    return BlocBuilder<CityListBloc, CityListState>(
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Gap(50),
+              const WText(
+                text: "My Cities",
+                size: 55,
+                weight: FontWeight.w600,
+              ),
+              const Gap(20),
+              const WText(
+                text:
+                    "Here is the list of your added cities. Click on the card to see the detailed view.",
+                textAlign: TextAlign.center,
+                size: 18,
+                maxLines: 3,
+              ),
+              const Gap(10),
+              const WText(
+                text: "Double tap the bin icon to delete a city from the list",
+                textAlign: TextAlign.center,
+                size: 18,
+                color: WColors.red,
+              ),
+              const Gap(10),
+              const WText(
+                text: "Pull down on the list to refresh it",
+                textAlign: TextAlign.center,
+                size: 18,
+                color: WColors.white,
+              ),
+              const Gap(15),
+              Expanded(
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: cities.length,
+                  itemBuilder: (context, index) {
+                    if (index == cities.length) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    final city = cities[index];
+                    return Card(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: WText(
+                          text: city.name,
+                          color: WColors.white,
+                        ),
+                        leading: GestureDetector(
+                          onDoubleTap: () {
+                            context.read<CityListBloc>().add(RemoveCity(city));
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            size: 30,
+                            color: WColors.red,
+                          ),
+                        ),
+                        trailing: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CityViewScreen(
+                                  cityName: city.name,
                                 ),
                               ),
                             );
                           },
+                          child: const Icon(
+                            Icons.keyboard_arrow_right_outlined,
+                            size: 40,
+                            color: WColors.white,
+                          ),
                         ),
                       ),
-                      const Gap(30),
-                    ],
-                  ),
+                    );
+                  },
                 ),
+              ),
+              const Gap(30),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyListWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: BlocBuilder<CityListBloc, CityListState>(
+        builder: (context, state) {
+          if (state is CityListSuccess) {
+            return Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              color: WColors.darkPurple,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Gap(50),
+                  const WText(
+                    text: "My Cities",
+                    size: 55,
+                    weight: FontWeight.w600,
+                  ),
+                  const Gap(20),
+                  const WText(
+                    text:
+                        "Here is the list of your added cities. Click on the card to see the detailed view.",
+                    textAlign: TextAlign.center,
+                    size: 18,
+                    maxLines: 3,
+                  ),
+                  const Gap(10),
+                  const WText(
+                    text:
+                        "Double tap the bin icon to delete a city from the list",
+                    textAlign: TextAlign.center,
+                    size: 18,
+                    color: WColors.red,
+                  ),
+                  const Gap(100),
+                  const WText(
+                    text:
+                        "No cities added yet! Go into the + tab and add a city!",
+                    textAlign: TextAlign.center,
+                    size: 25,
+                    color: WColors.white,
+                    maxLines: 3,
+                  ),
+                  const Gap(100),
+                  WButton(
+                    onTap: () {
+                      context.read<CityListBloc>().add(RefreshCityList());
+                    },
+                    text: "Refresh",
+                    textColor: WColors.white,
+                    btnColor: WColors.lightPurple,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 15),
+                  ),
+                ],
               ),
             );
           } else {
-            return Container();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),

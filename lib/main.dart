@@ -7,6 +7,8 @@ import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/screens/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app/presentation/styles/colors.dart';
+import 'package:weather_app/presentation/widgets/w_text.dart';
 import 'bloc/add_city/add_city_bloc.dart';
 import 'bloc/city_list/city_list_bloc.dart';
 import 'bloc/weather/weather_bloc.dart';
@@ -67,49 +69,58 @@ class _WeatherAppState extends State<WeatherApp> {
                   ],
                   items: [
                     PersistentBottomNavBarItem(
-                      icon: Icon(Icons.home),
+                      icon: const Icon(Icons.home),
                       title: "Home",
-                      activeColorPrimary: Colors.blue,
+                      activeColorPrimary:
+                          WColors.getTimeBasedColor(currentHour),
                       inactiveColorPrimary: Colors.grey,
                     ),
                     PersistentBottomNavBarItem(
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add),
                       title: "Add City",
-                      activeColorPrimary: Colors.blue,
+                      activeColorPrimary:
+                          WColors.getTimeBasedColor(currentHour),
                       inactiveColorPrimary: Colors.grey,
                     ),
                     PersistentBottomNavBarItem(
-                      icon: Icon(Icons.list),
+                      icon: const Icon(Icons.list),
                       title: "City List",
-                      activeColorPrimary: Colors.blue,
+                      activeColorPrimary:
+                          WColors.getTimeBasedColor(currentHour),
                       inactiveColorPrimary: Colors.grey,
                     )
                   ],
+                  navBarHeight: 75,
                   confineInSafeArea: true,
                   backgroundColor: Colors.white,
                   handleAndroidBackButtonPress: true,
                   resizeToAvoidBottomInset: true,
                   stateManagement: true,
                   hideNavigationBarWhenKeyboardShows: true,
-                  decoration: NavBarDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                  decoration: const NavBarDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
                   ),
                   popAllScreensOnTapOfSelectedTab: true,
                   popActionScreens: PopActionScreensType.all,
-                  itemAnimationProperties: ItemAnimationProperties(
+                  itemAnimationProperties: const ItemAnimationProperties(
                     duration: Duration(milliseconds: 400),
                     curve: Curves.ease,
                   ),
-                  screenTransitionAnimation: ScreenTransitionAnimation(
+                  screenTransitionAnimation: const ScreenTransitionAnimation(
                     animateTabTransition: true,
                     curve: Curves.ease,
                     duration: Duration(milliseconds: 200),
                   ),
-                  navBarStyle:
-                      NavBarStyle.style9, // Choose the nav bar style you desire
+                  navBarStyle: NavBarStyle.style9,
                 );
               } else {
-                return Container();
+                return const SizedBox(
+                  child: Center(
+                    child: WText(text: "No snapshot data"),
+                  ),
+                );
               }
             }));
   }

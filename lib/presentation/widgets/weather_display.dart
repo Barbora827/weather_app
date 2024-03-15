@@ -38,7 +38,7 @@ class WeatherDisplay extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Gap(35),
+        const Gap(45),
         canNavigateBack
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -98,7 +98,7 @@ class WeatherDisplay extends StatelessWidget {
           titleLeft: "Max Temps",
           valueLeft: tempMax,
           iconRight: WeatherAppIcons.temperatire,
-          iconColorRight: WColors.lightBlue,
+          iconColorRight: WColors.coldBlue,
           titleRight: "Min Temps",
           valueRight: tempMin,
         ),

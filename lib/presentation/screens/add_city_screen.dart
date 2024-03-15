@@ -10,31 +10,6 @@ import 'package:weather_app/presentation/widgets/w_button.dart';
 import 'package:weather_app/presentation/widgets/w_no_internet_display.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 
-class GeocodingService {
-  final String apiKey;
-
-  GeocodingService({required this.apiKey});
-
-  Future<Map<String, dynamic>?> getCoordinates(String address) async {
-    final endpoint = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apiKey');
-
-    final response = await http.get(endpoint);
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      if (decoded['status'] == 'OK') {
-        return decoded['results'][0]['geometry']['location'];
-      } else {
-        print(
-            'Geocoding API request failed with status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    }
-    return null;
-  }
-}
-
 class AddCityScreen extends StatefulWidget {
   const AddCityScreen({super.key});
 
@@ -63,6 +38,8 @@ class _AddCityScreenState extends State<AddCityScreen> {
 
 class AddCityUI extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
+
+  AddCityUI({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +78,9 @@ class AddCityUI extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        print(state);
         if (state is! AddCityNoInternet) {
           return Container(
-            color: const Color.fromARGB(255, 121, 159, 202),
+            color: WColors.lightBlue,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +113,7 @@ class AddCityUI extends StatelessWidget {
                         ),
                         focusedBorder: const OutlineInputBorder(
                           borderSide:
-                              BorderSide(color: WColors.lightBlue, width: 2.0),
+                              BorderSide(color: WColors.white, width: 2.0),
                         ),
                         border: const OutlineInputBorder(),
                         labelText: 'Enter City',
@@ -151,7 +127,7 @@ class AddCityUI extends StatelessWidget {
                   },
                   text: "Add a city",
                   textColor: WColors.white,
-                  btnColor: const Color.fromARGB(255, 65, 91, 127),
+                  btnColor: WColors.blue,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                 ),
@@ -161,7 +137,7 @@ class AddCityUI extends StatelessWidget {
           );
         } else {
           return Container(
-              color: const Color.fromARGB(255, 121, 159, 202),
+              color: WColors.lightBlue,
               child: WNoInternetDisplay(
                   cache: false,
                   onTap: () {
@@ -170,5 +146,30 @@ class AddCityUI extends StatelessWidget {
         }
       },
     );
+  }
+}
+
+class GeocodingService {
+  final String apiKey;
+
+  GeocodingService({required this.apiKey});
+
+  Future<Map<String, dynamic>?> getCoordinates(String address) async {
+    final endpoint = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apiKey');
+
+    final response = await http.get(endpoint);
+
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      if (decoded['status'] == 'OK') {
+        return decoded['results'][0]['geometry']['location'];
+      } else {
+        print(
+            'Geocoding API request failed with status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    }
+    return null;
   }
 }
