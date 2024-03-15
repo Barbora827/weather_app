@@ -11,18 +11,13 @@ import 'package:weather_app/presentation/widgets/weather_display.dart';
 import '../../bloc/weather/weather_bloc.dart';
 import '../widgets/w_no_internet_display.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   final AsyncSnapshot<Position> position;
   const HomeScreen({super.key, required this.position});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
   Widget build(BuildContext context) {
-    final position = widget.position;
+    final position = this.position;
     return BlocBuilder<WeatherBloc, WeatherState>(
       builder: (context, state) {
         return RefreshIndicator(
@@ -66,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (state is WeatherLoading) {
       return const CircularProgressIndicator();
     } else {
-      // Handle the offline scenario
+      // If offline
       return FutureBuilder<String?>(
         future: _getCachedWeather(),
         builder: (context, snapshot) {
@@ -95,9 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: WNoInternetDisplay(
                 cache: true,
                 onTap: () {
-                  context
-                      .read<WeatherBloc>()
-                      .add(RefreshWeather(widget.position));
+                  context.read<WeatherBloc>().add(RefreshWeather(position));
                 },
               ),
             );

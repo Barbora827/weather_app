@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:weather/weather.dart';
-import 'package:weather_app/data/data.dart';
+import 'package:weather_app/data/keys.dart';
 import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/screens/home_screen.dart';
@@ -11,6 +11,10 @@ import 'package:weather_app/presentation/widgets/w_persistent_tab_view.dart';
 import 'bloc/add_city/add_city_bloc.dart';
 import 'bloc/city_list/city_list_bloc.dart';
 import 'bloc/weather/weather_bloc.dart';
+
+// Remember to include your own API keys for OpenWeatherMap (apiKey) and GoogleMaps Geocoding (googleMapsApiKey)
+String weatherApiKey = "YOUR_API_KEY";
+String googleMapsApiKey = "YOUR_API_KEY";
 
 void main() {
   runApp(const WeatherApp());
@@ -59,7 +63,7 @@ class _WeatherAppState extends State<WeatherApp> {
                 ),
                 BlocProvider<CityListBloc>(
                   create: (context) => CityListBloc()..add(RefreshCityList()),
-                  child: const CityListScreen(),
+                  child: CityListScreen(),
                 ),
               ];
 
@@ -77,7 +81,7 @@ class _WeatherAppState extends State<WeatherApp> {
                 ),
                 BlocProvider<CityListBloc>(
                   create: (context) => CityListBloc()..add(RefreshCityList()),
-                  child: const CityListScreen(),
+                  child: CityListScreen(),
                 ),
               ];
               if (snapshot.hasData) {

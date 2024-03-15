@@ -26,7 +26,6 @@ class WIconButton extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        // border: Border.all(color: WColors.black)
       ),
       child: GestureDetector(
         onTap: () {

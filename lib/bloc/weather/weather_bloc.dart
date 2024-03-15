@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/data/data.dart';
+import 'package:weather_app/data/keys.dart';
 
 part 'weather_event.dart';
 part 'weather_state.dart';

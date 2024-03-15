@@ -4,24 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather_app/bloc/add_city/add_city_bloc.dart';
-import 'package:weather_app/data/data.dart';
+import 'package:weather_app/data/keys.dart';
 import 'package:weather_app/presentation/styles/colors.dart';
 import 'package:weather_app/presentation/widgets/w_button.dart';
 import 'package:weather_app/presentation/widgets/w_no_internet_display.dart';
 import 'package:weather_app/presentation/widgets/w_text.dart';
 
-class AddCityScreen extends StatefulWidget {
+class AddCityScreen extends StatelessWidget {
   const AddCityScreen({super.key});
-
-  @override
-  State<AddCityScreen> createState() => _AddCityScreenState();
-}
-
-class _AddCityScreenState extends State<AddCityScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +127,7 @@ class AddCityUI extends StatelessWidget {
             ),
           );
         } else {
+          // If offline
           return Container(
               color: WColors.lightBlue,
               child: WNoInternetDisplay(

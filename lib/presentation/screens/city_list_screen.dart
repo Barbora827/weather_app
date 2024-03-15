@@ -8,27 +8,9 @@ import 'package:weather_app/presentation/widgets/w_text.dart';
 import '../../data/models/city.dart';
 import '../widgets/w_button.dart';
 
-class CityListScreen extends StatefulWidget {
-  const CityListScreen({super.key});
-
-  @override
-  State<CityListScreen> createState() => _CityListScreenState();
-}
-
-class _CityListScreenState extends State<CityListScreen> {
+class CityListScreen extends StatelessWidget {
   List<City> cities = [];
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<CityListBloc>().add(GetCities());
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
+  CityListScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

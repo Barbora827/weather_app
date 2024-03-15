@@ -43,8 +43,6 @@ class CityListBloc extends Bloc<CityListEvent, CityListState> {
     });
   }
 
-  // Functions
-
   Future<List<City>> _retrieveSavedCities() async {
     final prefs = await SharedPreferences.getInstance();
     final allKeys = prefs.getKeys();
@@ -63,10 +61,8 @@ class CityListBloc extends Bloc<CityListEvent, CityListState> {
           longitude: decodedData['lng'].toString(),
         );
         savedCities.add(city);
-        print('Saved city name: ${city.name}');
       }
     }
-
     return savedCities;
   }
 
