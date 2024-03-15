@@ -16,7 +16,7 @@ If the user is offline or has location turned off, the app will display last cac
 # Add City Screen 
 Allows the user to add a city to monitor to list, with snackbars for valid and invalid city inputs
 
-<img src="https://github.com/Barbora827/weather_app/assets/58209361/e4abb75f-769c-4508-b6eb-a95d1d04c955" height=500> <img src="https://github.com/Barbora827/weather_app/assets/58209361/27359821-0eb1-4c28-a785-9f6d9f613338" height=500> <img src="https://github.com/Barbora827/weather_app/assets/58209361/368bbde9-c7c8-41fc-b4f4-b2d167d6bd40" height=500>
+<img src="https://github.com/Barbora827/weather_app/assets/58209361/27359821-0eb1-4c28-a785-9f6d9f613338" height=500> <img src="https://github.com/Barbora827/weather_app/assets/58209361/368bbde9-c7c8-41fc-b4f4-b2d167d6bd40" height=500> <img src="https://github.com/Barbora827/weather_app/assets/58209361/5586b6de-fa0a-42d4-b96d-e2f37f131339" height=500>
 
 # City List Screen
 Displays all the added cities by users. The list can be refreshed and cities can be deleted
