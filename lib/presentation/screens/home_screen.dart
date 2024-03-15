@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final position = this.position;
+    context.read<WeatherBloc>().add(RefreshWeather(this.position));
     return BlocBuilder<WeatherBloc, WeatherState>(
       builder: (context, state) {
         return RefreshIndicator(
