@@ -55,7 +55,8 @@ class _WeatherAppState extends State<WeatherApp> {
                       child: const HomeScreen(),
                     ),
                     BlocProvider<AddCityBloc>(
-                      create: (context) => AddCityBloc(),
+                      create: (context) => AddCityBloc(
+                          GeocodingService(apiKey: googleMapsApiKey)),
                       child: const AddCityScreen(),
                     ),
                     BlocProvider<CityListBloc>(

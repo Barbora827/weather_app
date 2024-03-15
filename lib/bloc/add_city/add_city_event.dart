@@ -7,4 +7,13 @@ sealed class AddCityEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class RefreshAddCityScreen extends AddCityEvent {}
+class GetAddCityScreen extends AddCityEvent {}
+
+class SaveCity extends AddCityEvent {
+  final String city;
+
+  const SaveCity(this.city);
+
+  @override
+  List<Object> get props => [city];
+}
