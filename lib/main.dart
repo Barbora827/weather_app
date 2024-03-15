@@ -7,8 +7,7 @@ import 'package:weather_app/presentation/screens/add_city_screen.dart';
 import 'package:weather_app/presentation/screens/city_list_screen.dart';
 import 'package:weather_app/presentation/screens/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/presentation/styles/colors.dart';
-import 'package:weather_app/presentation/widgets/w_text.dart';
+import 'package:weather_app/presentation/widgets/w_persistent_tab_view.dart';
 import 'bloc/add_city/add_city_bloc.dart';
 import 'bloc/city_list/city_list_bloc.dart';
 import 'bloc/weather/weather_bloc.dart';
@@ -17,7 +16,6 @@ void main() {
   runApp(const WeatherApp());
 }
 
-// final int currentHour = 21;
 final int currentHour = int.parse(DateTime.now().toString().substring(10, 13));
 const int selectedIndex = 0;
 
@@ -43,91 +41,59 @@ class _WeatherAppState extends State<WeatherApp> {
         theme: ThemeData(canvasColor: Colors.transparent),
         debugShowCheckedModeBanner: false,
         home: FutureBuilder(
-            future: _determinePosition(),
+            future: determinePosition(),
             builder: (context, snapshot) {
+              final position = snapshot;
+              final locationAvailableScreens = [
+                BlocProvider<WeatherBloc>(
+                  create: (context) => WeatherBloc(WeatherFactory(apiKey))
+                    ..add(GetCurrentLocationWeather(position as Position)),
+                  child: HomeScreen(
+                    position: position,
+                  ),
+                ),
+                BlocProvider<AddCityBloc>(
+                  create: (context) =>
+                      AddCityBloc(GeocodingService(apiKey: googleMapsApiKey)),
+                  child: const AddCityScreen(),
+                ),
+                BlocProvider<CityListBloc>(
+                  create: (context) => CityListBloc()..add(RefreshCityList()),
+                  child: const CityListScreen(),
+                ),
+              ];
+
+              final locationNotAvailableScreens = [
+                BlocProvider<WeatherBloc>(
+                  create: (context) => WeatherBloc(WeatherFactory(apiKey)),
+                  child: HomeScreen(
+                    position: position,
+                  ),
+                ),
+                BlocProvider<AddCityBloc>(
+                  create: (context) =>
+                      AddCityBloc(GeocodingService(apiKey: googleMapsApiKey)),
+                  child: const AddCityScreen(),
+                ),
+                BlocProvider<CityListBloc>(
+                  create: (context) => CityListBloc()..add(RefreshCityList()),
+                  child: const CityListScreen(),
+                ),
+              ];
               if (snapshot.hasData) {
-                return PersistentTabView(
-                  context,
-                  controller: _controller,
-                  screens: [
-                    BlocProvider<WeatherBloc>(
-                      create: (context) => WeatherBloc(WeatherFactory(apiKey))
-                        ..add(GetCurrentLocationWeather(
-                            snapshot.data as Position)),
-                      child: const HomeScreen(),
-                    ),
-                    BlocProvider<AddCityBloc>(
-                      create: (context) => AddCityBloc(
-                          GeocodingService(apiKey: googleMapsApiKey)),
-                      child: const AddCityScreen(),
-                    ),
-                    BlocProvider<CityListBloc>(
-                      create: (context) =>
-                          CityListBloc()..add(RefreshCityList()),
-                      child: const CityListScreen(),
-                    ),
-                  ],
-                  items: [
-                    PersistentBottomNavBarItem(
-                      icon: const Icon(Icons.home),
-                      title: "Home",
-                      activeColorPrimary:
-                          WColors.getTimeBasedColor(currentHour),
-                      inactiveColorPrimary: Colors.grey,
-                    ),
-                    PersistentBottomNavBarItem(
-                      icon: const Icon(Icons.add),
-                      title: "Add City",
-                      activeColorPrimary:
-                          WColors.getTimeBasedColor(currentHour),
-                      inactiveColorPrimary: Colors.grey,
-                    ),
-                    PersistentBottomNavBarItem(
-                      icon: const Icon(Icons.list),
-                      title: "City List",
-                      activeColorPrimary:
-                          WColors.getTimeBasedColor(currentHour),
-                      inactiveColorPrimary: Colors.grey,
-                    )
-                  ],
-                  navBarHeight: 75,
-                  confineInSafeArea: true,
-                  backgroundColor: Colors.white,
-                  handleAndroidBackButtonPress: true,
-                  resizeToAvoidBottomInset: true,
-                  stateManagement: true,
-                  hideNavigationBarWhenKeyboardShows: true,
-                  decoration: const NavBarDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10)),
-                  ),
-                  popAllScreensOnTapOfSelectedTab: true,
-                  popActionScreens: PopActionScreensType.all,
-                  itemAnimationProperties: const ItemAnimationProperties(
-                    duration: Duration(milliseconds: 400),
-                    curve: Curves.ease,
-                  ),
-                  screenTransitionAnimation: const ScreenTransitionAnimation(
-                    animateTabTransition: true,
-                    curve: Curves.ease,
-                    duration: Duration(milliseconds: 200),
-                  ),
-                  navBarStyle: NavBarStyle.style9,
-                );
+                return WPersistentTabView(
+                    controller: _controller, screens: locationAvailableScreens);
               } else {
-                return const SizedBox(
-                  child: Center(
-                    child: WText(text: "No snapshot data"),
-                  ),
-                );
+                return WPersistentTabView(
+                    controller: _controller,
+                    screens: locationNotAvailableScreens);
               }
             }));
   }
 }
 
 //Function from Geolocator package
-Future<Position> _determinePosition() async {
+Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 

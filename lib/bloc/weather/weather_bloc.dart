@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import 'package:geolocator/geolocator.dart';
@@ -49,15 +50,11 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         WeatherFactory wFactory =
             WeatherFactory(apiKey, language: Language.ENGLISH);
 
-        final currentState = state;
-        if (currentState is WeatherSuccess) {
-          final refreshedWeather = await wFactory.currentWeatherByCityName(
-            currentState.weather.areaName!,
-          );
-          emit(WeatherSuccess(refreshedWeather));
-        } else {
-          return;
-        }
+        Weather weather = await wFactory.currentWeatherByLocation(
+          event.position.data!.latitude,
+          event.position.data!.longitude,
+        );
+        emit(WeatherSuccess(weather));
       } catch (e) {
         emit(WeatherFail());
       }

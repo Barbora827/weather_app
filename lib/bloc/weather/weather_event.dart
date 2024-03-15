@@ -25,4 +25,11 @@ class GetCityWeather extends WeatherEvent {
   List<Object> get props => [cityName];
 }
 
-class RefreshWeather extends WeatherEvent {}
+class RefreshWeather extends WeatherEvent {
+  final AsyncSnapshot<Position> position;
+
+  const RefreshWeather(this.position);
+
+  @override
+  List<Object> get props => [position];
+}

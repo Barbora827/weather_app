@@ -78,6 +78,7 @@ class AddCityUI extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        // If user is connected to the internet
         if (state is! AddCityNoInternet) {
           return Container(
             color: WColors.lightBlue,
